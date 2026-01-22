@@ -34,8 +34,8 @@
               <i class="bi bi-person-circle me-1"></i>{{ authStore.user?.username }}
             </button>
             <ul class="dropdown-menu">
-              <li><RouterLink class="dropdown-item" to="/orders">My Orders</RouterLink></li>
-              <li><hr class="dropdown-divider"></li>
+              <!-- <li><RouterLink class="dropdown-item" to="/orders">My Orders</RouterLink></li> -->
+              <!-- <li><hr class="dropdown-divider"></li> -->
               <li><button class="dropdown-item" @click="handleLogout">Logout</button></li>
             </ul>
           </div>
