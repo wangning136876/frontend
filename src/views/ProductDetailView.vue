@@ -49,14 +49,14 @@
                   <td>Brand</td>
                   <td>{{ product.brand }}</td>
                 </tr>
-                <tr>
+                <!-- <tr>
                   <td>Category</td>
                   <td>{{ product.category?.name }}</td>
-                </tr>
-                <tr>
+                </tr> -->
+                <!-- <tr>
                   <td>Stock</td>
                   <td>{{ product.stockQuantity }} units</td>
-                </tr>
+                </tr> -->
               </tbody>
             </table>
           </div>

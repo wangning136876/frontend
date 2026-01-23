@@ -79,7 +79,7 @@
           </div>
           
           <div v-else class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-            <ProductCard v-for="product in products" :key="product.id" :product="product" />
+            <ProductCard v-for="product in products" :key="product.id" :product="product"   />
           </div>
           
           <!-- Pagination -->
@@ -104,10 +104,13 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed , watch} from 'vue'
 import { useProductStore } from '@/stores/product'
 import ProductCard from '@/components/ProductCard.vue'
+import { useRoute, useRouter } from 'vue-router'
 
+const route = useRoute()
+const router = useRouter()
 const productStore = useProductStore()
 const products = ref([])
 const loading = ref(false)
@@ -121,13 +124,14 @@ const filters = ref({
   categoryId: '',
   minPrice: null,
   maxPrice: null,
-  brand: ''
+  brand: '',
+  categoryId: '',
 })
 
 const visiblePages = computed(() => {
   const pages = []
-  const start = Math.max(0, currentPage.value - 2)
-  const end = Math.min(totalPages.value, start + 5)
+  const start = Math.max(0, currentPage.value - 1)
+  const end = Math.min(totalPages.value, start + 3)
   
   for (let i = start; i < end; i++) {
     pages.push(i)
@@ -159,7 +163,32 @@ const fetchProducts = async () => {
 const applyFilters = () => {
   currentPage.value = 0
   fetchProducts()
+  updateRouteParams()
 }
+const updateRouteParams = () => {
+  const query = { ...route.query }
+  if (filters.value.categoryId) {
+    query.category = filters.value.categoryId
+  } else {
+    delete query.category
+  }
+
+  router.replace({ query })
+}
+
+watch(
+  () => route.query.category,
+  (newCategoryId) => {
+    if (newCategoryId !== filters.value.categoryId) {
+      filters.value.categoryId = newCategoryId || ''
+      currentPage.value = 0 
+      fetchProducts() 
+    }
+  },
+  { immediate: true } 
+)
+
+
 
 const changePage = (page) => {
   if (page >= 0 && page < totalPages.value) {
@@ -171,6 +200,7 @@ const changePage = (page) => {
 
 onMounted(async () => {
   await productStore.fetchCategories()
+  filters.value.categoryId = route.query.category || ''
   fetchProducts()
 })
 </script>

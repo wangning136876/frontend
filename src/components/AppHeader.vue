@@ -44,6 +44,7 @@
             <RouterLink to="/login" class="btn btn-outline-light me-2">Login</RouterLink>
             <RouterLink to="/register" class="btn btn-light">Register</RouterLink>
           </div>
+          
         </div>
       </div>
     </div>

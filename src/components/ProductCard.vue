@@ -4,7 +4,9 @@
       <div class="position-relative">
         <img :src="product.imageUrl || '/images/placeholder.jpg'" 
              :alt="product.name" 
-             class="card-img-top product-image">
+             class="card-img-top product-image"
+             @click.stop="clickToDetail(product.id)"
+             >
         <div v-if="product.stockQuantity <= 0" class="position-absolute top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50">
           <span class="badge bg-danger fs-6">Out of Stock</span>
         </div>
@@ -31,7 +33,7 @@
 
 <script setup>
 import { useCartStore } from '@/stores/cart'
-
+import router from '@/router'
 const props = defineProps({
   product: {
     type: Object,
@@ -46,6 +48,10 @@ const addToCart = () => {
     cartStore.addItem(props.product)
   }
 }
+const clickToDetail = (id) => {
+    router.push(`/products/${id}`)
+}
+
 </script>
 
 <style scoped>
