@@ -3,7 +3,7 @@
     <div class="container">
       <h1 class="mb-4">Checkout</h1>
       
-      <!-- Progress Steps -->
+
       <div class="row mb-5">
         <div class="col-12">
           <div class="progress-steps d-flex justify-content-between">
@@ -25,7 +25,7 @@
       
       <div class="row">
         <div class="col-lg-8">
-          <!-- Step 1: Shipping Address -->
+
           <div v-if="currentStep === 1" class="card mb-4">
             <div class="card-header">
               <h5 class="mb-0">Shipping Address</h5>
@@ -65,7 +65,7 @@
             </div>
           </div>
           
-          <!-- Step 2: Payment -->
+
           <div v-if="currentStep === 2" class="card mb-4">
             <div class="card-header">
               <h5 class="mb-0">Payment Information</h5>
@@ -96,7 +96,7 @@
             </div>
           </div>
           
-          <!-- Step 3: Review Order -->
+
           <div v-if="currentStep === 3" class="card mb-4">
             <div class="card-header">
               <h5 class="mb-0">Review Your Order</h5>
@@ -132,7 +132,7 @@
           </div>
         </div>
         
-        <!-- Order Summary -->
+
         <div class="col-lg-4">
           <div class="card">
             <div class="card-header">
@@ -172,9 +172,13 @@
 <script setup>
 import { ref } from 'vue'
 import { useCartStore } from '@/stores/cart'
+import { useAuthStore } from '@/stores/auth'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import api from '@/services/api' 
+
 const cartStore = useCartStore()
+const authStore = useAuthStore()
 const router = useRouter()
 
 const currentStep = ref(1)
@@ -208,20 +212,62 @@ const prevStep = () => {
   }
 }
 
+
 const placeOrder = async () => {
   placingOrder.value = true
   
+  try {
 
-  setTimeout(() => {
-    cartStore.clearCart()
-    placingOrder.value = false
-    router.push('/products')
-    ElMessage.success({
-      message: 'Your order has been placed successfully! Thank you for your purchase.',
+    const userId = authStore.user?.id
+    if (!userId) {
+      throw new Error('You must be logged in to place an order')
+    }
+
+
+    const fullShippingAddress = `${shippingAddress.value.fullName}, ${shippingAddress.value.address1} ${shippingAddress.value.address2 ? ', ' + shippingAddress.value.address2 : ''}, ${shippingAddress.value.city}, ${shippingAddress.value.postalCode}, Phone: ${shippingAddress.value.phone}`
+
+
+    const orderItems = cartStore.items.map(item => ({
+      productId: item.id,
+      quantity: item.quantity
+    }))
+
+
+    const orderData = {
+      userId: userId,
+      shippingAddress: fullShippingAddress,
+      orderItems: orderItems
+    }
+
+
+    const response = await api.post('/orders', orderData)
+
+
+    if (response.data.success) {
+      cartStore.clearCart()
+      ElMessage.success({
+        message: 'Your order has been placed successfully! Thank you for your purchase.',
+        duration: 3000,
+        center: true 
+      })
+      router.push('/products')
+    } else {
+      ElMessage.error({
+        message: response.data.message || 'Failed to place order',
+        duration: 3000,
+        center: true
+      })
+    }
+  } catch (error) {
+    const errorMsg = error.response?.data?.message || error.message || 'An error occurred while placing your order'
+    ElMessage.error({
+      message: errorMsg,
       duration: 3000,
-      center: true 
+      center: true
     })
-  }, 2000)
+  } finally {
+    placingOrder.value = false
+  }
 }
 </script>
 
