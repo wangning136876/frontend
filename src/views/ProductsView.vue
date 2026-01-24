@@ -130,8 +130,8 @@ const filters = ref({
 
 const visiblePages = computed(() => {
   const pages = []
-  const start = Math.max(0, currentPage.value - 1)
-  const end = Math.min(totalPages.value, start + 3)
+  const start = Math.max(0, currentPage.value - 2)
+  const end = Math.min(totalPages.value, start + 5)
   
   for (let i = start; i < end; i++) {
     pages.push(i)

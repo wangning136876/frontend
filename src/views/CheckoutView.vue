@@ -173,7 +173,7 @@
 import { ref } from 'vue'
 import { useCartStore } from '@/stores/cart'
 import { useRouter } from 'vue-router'
-
+import { ElMessage } from 'element-plus'
 const cartStore = useCartStore()
 const router = useRouter()
 
@@ -211,11 +211,16 @@ const prevStep = () => {
 const placeOrder = async () => {
   placingOrder.value = true
   
-  // Simulate API call
+
   setTimeout(() => {
     cartStore.clearCart()
     placingOrder.value = false
-    router.push('/order-success')
+    router.push('/products')
+    ElMessage.success({
+      message: 'Your order has been placed successfully! Thank you for your purchase.',
+      duration: 3000,
+      center: true 
+    })
   }, 2000)
 }
 </script>

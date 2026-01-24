@@ -33,6 +33,7 @@
 
 <script setup>
 import { useCartStore } from '@/stores/cart'
+import { Toast } from 'bootstrap'
 import router from '@/router'
 const props = defineProps({
   product: {
@@ -46,6 +47,7 @@ const cartStore = useCartStore()
 const addToCart = () => {
   if (props.product.stockQuantity > 0) {
     cartStore.addItem(props.product)
+    successToast.show()
   }
 }
 const clickToDetail = (id) => {
